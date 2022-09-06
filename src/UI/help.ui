@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Help</class>
+ <widget class="QDialog" name="Help">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>帮助</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QPlainTextEdit" name="plainTextEdit">
+     <property name="documentTitle">
+      <string>说明</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="plainText">
+      <string>最大力：最大力1，最大力2，最大力3三项数据中选择数最大的值即为最大力；
+相对力：最大力/体重；
+百分比：同一人，类别的最大力值处以配合类别的最大力值，举例：男，蝶手的最大力值/蝶配合的最大力值，即为蝶手的百分比%值；
+贡献率：各项/手+腿</string>
+     </property>
+     <property name="placeholderText">
+      <string/>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
