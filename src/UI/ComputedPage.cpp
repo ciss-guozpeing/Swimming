@@ -2,7 +2,7 @@
 #include "ui_computedpage.h"
 
 static ComputedPage* INSTANCE=nullptr;
-
+int ComputedPage::histRowCount=0;
 ComputedPage::ComputedPage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ComputedPage)
@@ -78,12 +78,11 @@ void ComputedPage::personStatistics()
     ui->hLayout->addWidget(m_barView);
 }
 
-void ComputedPage::createSinglePersonChart(QString key)
+void ComputedPage::createSinglePersonChart(QString person)
 {
-    QString key_5 = key + "-5";
-    QString key_7 = key + "-7";
+    QString key_5 = person + "-5";
+    QString key_7 = person + "-7";
 
-    QHBoxLayout* chartSetLayout = new QHBoxLayout;
 
     QStringList barLabels;
     barLabels<<"腿"<< "手"<< "配合"<< "蹬边滑行"<<"海豚腿";
@@ -117,7 +116,11 @@ void ComputedPage::createSinglePersonChart(QString key)
         barSet_Vec_7.push_back(barSet);
     }
 
+    m_all_barSet_Vec.insert(key_5,barSet_Vec_5);
+    m_all_barSet_Vec.insert(key_7,barSet_Vec_7);
+
     m_all_barSeries_Vec.insert(key_5,series_5);
+    m_all_barSeries_Vec.insert(key_7,series_7);
 
     // 5
     QChart *chart_5 = new QChart();
@@ -132,6 +135,9 @@ void ComputedPage::createSinglePersonChart(QString key)
     chart_7->addSeries(series_7);
     chart_7->setTitle(QString("%1不同泳姿项最大力柱状图").arg(key_7));
     chart_7->setAnimationOptions(QChart::AllAnimations);
+    m_all_chartView.insert(key_5,barView_5);
+    m_all_chartView.insert(key_7,barView_7);
+
 
     // 5
     QStringList categories_5;
@@ -168,16 +174,13 @@ void ComputedPage::createSinglePersonChart(QString key)
     barView_7->setChart(chart_7);
     barView_7->setFixedHeight(300);
 
-
-    int rowSerial=m_all_barSeries_Vec.size() / 1;
-
+    QHBoxLayout* chartSetLayout = new QHBoxLayout;
     chartSetLayout->addWidget(barView_5);
     chartSetLayout->addWidget(barView_7);
-    m_all_ChartLayouts.insert(key,chartSetLayout);
-    ui->gridLayout->addLayout(chartSetLayout,rowSerial - 1,0);
+    m_all_ChartLayouts.insert(person,chartSetLayout);
 
-    m_all_barSet_Vec.insert(key_5,barSet_Vec_5);
-    m_all_barSet_Vec.insert(key_7,barSet_Vec_7);
+    ui->gridLayout->addLayout(chartSetLayout,histRowCount,0);
+    histRowCount+=1;
 }
 
 
@@ -186,23 +189,18 @@ void ComputedPage::updatePersonStatistics(QMap<QString,QVector<int>> personStati
     m_axisY->setMax(personStatistics["总人数"].at(0));
 
     for(int i=0; i<personStatistics["总人数"].size(); i++){
-        qDebug() << personStatistics["总人数"].at(i);
         m_set0->replace(i, personStatistics["总人数"].at(i));;
     }
     for(int i=0; i<personStatistics["自由泳"].size(); i++){
-        qDebug() << personStatistics["自由泳"].at(i);
         m_set1->replace(i, personStatistics["自由泳"].at(i));
     }
     for(int i=0; i<personStatistics["仰泳"].size(); i++){
-        qDebug() << personStatistics["仰泳"].at(i);
         m_set2->replace(i, personStatistics["仰泳"].at(i));
     }
     for(int i=0; i<personStatistics["蛙泳"].size(); i++){
-        qDebug() << personStatistics["蛙泳"].at(i);
         m_set3->replace(i, personStatistics["蛙泳"].at(i));
     }
     for(int i=0; i<personStatistics["蝶泳"].size(); i++){
-        qDebug() << personStatistics["蝶泳"].at(i);
         m_set4->replace(i, personStatistics["蝶泳"].at(i));
     }
 }
@@ -213,7 +211,6 @@ void ComputedPage::updateSinglePersonStatistics(QMap<QString,QMap<QString,QVecto
     for(iter=result.begin();iter!=result.end();iter++){
         for(int i=0; i<m_all_barSet_Vec[iter.key() + "-5"].size();i++){
             for(int j=0; j<iter.value()["5"].at(i).size(); j++){
-                qDebug() << iter.key() + "-5";
                 m_all_barSet_Vec[iter.key() + "-5"].at(i)->replace(j,iter.value()["5"].at(i).at(j));
                 m_all_barSet_Vec[iter.key() + "-7"].at(i)->replace(j,iter.value()["7"].at(i).at(j));
             }
@@ -228,7 +225,8 @@ void ComputedPage::deleteSinglePersonChart(QString key)
     QString key_7 = key + "-7";
     QHBoxLayout* hLayout = m_all_ChartLayouts[key];
     ui->gridLayout->takeAt(ui->gridLayout->indexOf(m_all_ChartLayouts[key]));
-    m_all_chartView[key]->deleteLater();
+    m_all_chartView[key_5]->deleteLater();
+    m_all_chartView[key_7]->deleteLater();
     m_all_barSet_Vec.remove(key_5);
     m_all_barSet_Vec.remove(key_7);
     m_all_barSeries_Vec.remove(key_5);
@@ -236,4 +234,9 @@ void ComputedPage::deleteSinglePersonChart(QString key)
     hLayout->deleteLater();
 
     ui->gridLayout->update();
+}
+
+void ComputedPage::updatePersonChart(QString person)
+{
+    createSinglePersonChart(person);
 }

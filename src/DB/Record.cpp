@@ -92,21 +92,21 @@ QMap<QString,int> Record::_isExistsDeleteRecord(QString name, QString birthday, 
     QString select_person_sql = QString("select id from person where name = '%1' and gender='%2' and birthday='%3'").arg(name,gender,birthday);
     select_person_query.prepare(select_person_sql);
     if(!select_person_query.exec()){
-        logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"更新记录","查询记录人员失败",true);
+        logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"存在记录","查询记录人员失败",true);
         result["isExists"] = 0;
         result["person_id"] = person_id.toInt();
         return result;
     } else{
         select_person_query.next();
         person_id = select_person_query.value(0).toString();
-        LOG_INFO(QString("创建记录-查询记录人员id'%1'").arg(person_id));
+        LOG_INFO(QString("存在记录-查询记录人员id'%1'").arg(person_id));
     }
 
     QSqlQuery select_query;
     QString select_sql = QString("select count(stroke) from person LEFT JOIN  record on record.person_id = '%1' WHERE record.stroke = '%2'  and record.type='%3' and record.create_at='%4'").arg(person_id,stroke,type,create_at);
     select_query.prepare(select_sql);
     if(!select_query.exec()){
-        logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"更新记录","查询记录失败",true);
+        logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"存在记录","查询记录失败",true);
         result["isExists"] = 0;
         result["person_id"] = person_id.toInt();
         return result;
@@ -117,7 +117,7 @@ QMap<QString,int> Record::_isExistsDeleteRecord(QString name, QString birthday, 
             result["person_id"] = person_id.toInt();
             return result;
         } else{
-            logger->sendLogMessage(logger->LOGGERTYPE::WARN,"更新记录","更新记录不存在",true);
+            logger->sendLogMessage(logger->LOGGERTYPE::WARN,"存在记录","更新记录不存在",true);
             result["isExists"] = 0;
             result["person_id"] = person_id.toInt();
             return result;
@@ -189,31 +189,31 @@ void Record::updateRecord(QString name, QString birthday, QString gender,QString
 
 void Record::deleteRecord(QVector<int> rowIndexs)
 {
-    auto logger = Log::instance();
-    this->open();
-    auto tableView = TableView::getInstance();
-    for(int i=0; i<rowIndexs.size(); i++){
-        QString name = tableView->proxyModel()->index(rowIndexs.at(i),2).data().toString();
-        QString birthday = tableView->proxyModel()->index(rowIndexs.at(i),0).data().toString().split("::").at(1);
-        QString gender = tableView->proxyModel()->index(rowIndexs.at(i),3).data().toString();
-        QString stroke = tableView->proxyModel()->index(rowIndexs.at(i),9).data().toString();
-        QString type = tableView->proxyModel()->index(rowIndexs.at(i),10).data().toString();
-        QString create_at = tableView->proxyModel()->index(rowIndexs.at(i),1).data().toString().split("::").at(1);
-        QMap<QString,int> result = this->_isExistsDeleteRecord(name, birthday, gender, stroke, type, create_at);
-        QString person_id = QString::number(result["person_id"]);
-        bool isExists = result["isExists"];
-        if(isExists){
-            QSqlQuery delete_query;
-            QString delete_sql = QString("delete from record where stroke='%1' and type='%2' and person_id='%3'").arg(stroke,type,person_id);
-            delete_query.prepare(delete_sql);
-            if(!delete_query.exec()){
-                logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"删除记录","删除记录失败",false);
-            } else {
-                logger->sendLogMessage(logger->LOGGERTYPE::INFO,"删除记录","删除记录成功",false);
-            }
-        }
-    }
-    this->close();
+//    auto logger = Log::instance();
+//    this->open();
+//    auto tableView = TableView::getInstance();
+//    for(int i=0; i<rowIndexs.size(); i++){
+//        QString name = tableView->model()->index(rowIndexs.at(i),2).data().toString();
+//        QString birthday = tableView->model()->index(rowIndexs.at(i),0).data().toString().split("::").at(1);
+//        QString gender = tableView->model()->index(rowIndexs.at(i),3).data().toString();
+//        QString stroke = tableView->model()->index(rowIndexs.at(i),9).data().toString();
+//        QString type = tableView->model()->index(rowIndexs.at(i),10).data().toString();
+//        QString create_at = tableView->model()->index(rowIndexs.at(i),1).data().toString().split("::").at(1);
+//        QMap<QString,int> result = this->_isExistsDeleteRecord(name, birthday, gender, stroke, type, create_at);
+//        QString person_id = QString::number(result["person_id"]);
+//        bool isExists = result["isExists"];
+//        if(isExists){
+//            QSqlQuery delete_query;
+//            QString delete_sql = QString("delete from record where stroke='%1' and type='%2' and person_id='%3'").arg(stroke,type,person_id);
+//            delete_query.prepare(delete_sql);
+//            if(!delete_query.exec()){
+//                logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"删除记录","删除记录失败",false);
+//            } else {
+//                logger->sendLogMessage(logger->LOGGERTYPE::INFO,"删除记录","删除记录成功",false);
+//            }
+//        }
+//    }
+//    this->close();
 }
 
 void Record::setUpdateModelIndex(const QModelIndex index)
@@ -627,5 +627,17 @@ bool Record::updateEnv(QString env)
         return false;
     }
     return true;
+}
+
+void Record::updateRecord(QStringList record)
+{
+    qDebug() <<record;
+    QString create_at = record.at(1).split("::").at(1);
+    QString name = record.at(2);
+    QString gender = record.at(3);
+    QString weight = record.at(4);
+    QString birthday = record.at(0).split("::").at(1);
+
+
 }
 

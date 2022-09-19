@@ -10,6 +10,7 @@ typedef QMap<QString,QMap<QString,QMap<QString,QVector<double>>>> DataType;
 class TableData
 {
     QString m_person;
+    QString m_weight;
     QVector<QString> m_strokes;
     QMap<QString,QVector<QString>> m_strokeItems;
     QVector<double> m_values;
@@ -20,10 +21,10 @@ class TableData
         {"蝶泳",{{"蝶腿",{{"5",{0,0,0,0,0,0,0}},{"7",{0,0,0,0,0,0,0}}}},{"蝶手",{{"5",{0,0,0,0,0,0,0}},{"7",{0,0,0,0,0,0,0}}}},{"蝶配合",{{"5",{0,0,0,0,0,0,0}},{"7",{0,0,0,0,0,0,0}}}},{"海豚腿(俯卧)",{{"5",{0,0,0,0,0,0,0}},{"7",{0,0,0,0,0,0,0}}}},{"蹬边滑行",{{"5",{0,0,0,0,0,0,0}},{"7",{0,0,0,0,0,0,0}}}}}}
     };
 public:
-    explicit TableData(QString person,QString stroke, QString strokeItem, QString distance,QVector<double> values);
+    explicit TableData(QString person,QString weight,QString stroke, QString strokeItem, QString distance,QVector<double> values);
 
     QString Person();
-
+    QString weight();
     QVector<double> Values(QString stroke, QString strokeItem, QString distance);
     void setValues(QString stroke, QString strokeItem, QString distance, QVector<double> values);
 

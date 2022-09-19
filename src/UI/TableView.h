@@ -80,8 +80,8 @@ public:
     QMap<QString,QMap<QString,QVector<QVector<double>>>> singlePersonStatistics();
 
     QMap<QString,TableData*> tableDatas();
-    void addTableData(QString person,QString stroke,QString strokeItem, QString distance, QVector<double> values);
-    void delTableData(QString person,QString stroke,QString strokeItem, QString distance);
+    void addTableData(QString person, QString weight, QString stroke,QString strokeItem, QString distance, QVector<double> values);
+    void delTableData(QString person, QString stroke, QString strokeItem, QString distance);
     void delTableData(QString person);
     void updateTableData(QString person,QString stroke,QString strokeItem,QString distance, QVector<double> values);
     QVector<double> selTableData(QString person,QString stroke,QString strokeItem, QString distance);

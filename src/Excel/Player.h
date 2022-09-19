@@ -27,7 +27,7 @@ class Player: public QObject
 public:
     static Player *getInstance();
     Player();
-    void openXlsx();
+    QVector<QStringList> openXlsx();
     QVector<QVector<QString>> openScoreXlsx();
     void saveXlsx();
     void saveModelXlsx();

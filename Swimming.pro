@@ -32,7 +32,6 @@ include(libs/Libraries.pri)
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    src/Algorithm/ComputedChart.cpp \
     src/Algorithm/Kmeans.cpp \
     src/Algorithm/Score.cpp \
     src/Algorithm/Statistics.cpp \
@@ -56,6 +55,7 @@ SOURCES += \
     src/Settings/TableSetting.cpp \
     src/Settings/User/AccountManager.cpp \
     src/Settings/WindowSetting.cpp \
+    src/Tasks/LoadTableData.cpp \
     src/UI/ClusterPage.cpp \
     src/UI/ComputedPage.cpp \
     src/UI/Help.cpp \
@@ -87,7 +87,6 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
-    src/Algorithm/ComputedChart.h \
     src/Algorithm/Kmeans.h \
     src/Algorithm/Score.h \
     src/Algorithm/Statistics.h \
@@ -112,6 +111,7 @@ HEADERS += \
     src/Settings/TableSetting.h \
     src/Settings/User/AccountManager.h \
     src/Settings/WindowSetting.h \
+    src/Tasks/LoadTableData.h \
     src/UI/ClusterPage.h \
     src/UI/ComputedPage.h \
     src/UI/Help.h \

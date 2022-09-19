@@ -1,4 +1,4 @@
-#ifndef NEWDATA_H
+﻿#ifndef NEWDATA_H
 #define NEWDATA_H
 
 #include <QObject>
@@ -42,10 +42,10 @@ public:
     void setWarnText(QString text);
     void clearWarnText();
     QString uniqueData();
-
+    void clearText();
 private slots:
     void on_restStorkeType(const QString &text);
-
+    void on_findRecord(const QString& text);
 private:
     Ui::NewData *ui;
 };

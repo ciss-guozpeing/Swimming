@@ -10,7 +10,7 @@ class ThreadPool: public QObject
 public:
     static ThreadPool* getInstance();
     ThreadPool();
-    void submitTask(QRunnable* task);
+    void submitTask(QRunnable* task, bool autoDelete=true);
 
 };
 

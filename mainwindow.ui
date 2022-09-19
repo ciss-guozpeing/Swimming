@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1719</width>
+    <width>1864</width>
     <height>914</height>
    </rect>
   </property>
@@ -311,7 +311,7 @@ rgb(126, 133, 143)
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="lineEdit">
+                    <widget class="QLineEdit" name="nameSearchEditLint">
                      <property name="minimumSize">
                       <size>
                        <width>200</width>
@@ -706,7 +706,7 @@ rgb(126, 133, 143)
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1719</width>
+     <width>1864</width>
      <height>26</height>
     </rect>
    </property>

@@ -23,14 +23,10 @@ Player *Player::getInstance()
     return INSTANCE;
 }
 
-void Player::openXlsx()
+QVector<QStringList> Player::openXlsx()
 {
     QString filePath = QFileDialog::getOpenFileName(0, "Open xlsx file", QString(), "*.xlsx");
-
-    auto tableView = TableView::getInstance();
-    auto computedPage = ComputedPage::getInstance();
-    auto tableSetting = TableSetting::getInstance();
-
+    QVector<QStringList> tableDatas;
     if (!filePath.isEmpty()) {
         QString cellValue;
 
@@ -56,45 +52,10 @@ void Player::openXlsx()
                 }
             }
             cells.push_back("source");
-            // 检测
-            QString name = cells.at(2);
-            QString birthday = cells.at(0).split("::").at(1);
-            QString gender = cells.at(3);
-            QString stroke = cells.at(9);
-            QString strokeItem = cells.at(10);
-            QString distance = cells.at(11);
-            QString record = name + birthday + gender + stroke + strokeItem + distance;
-            bool isExistsData = tableView->isExistsRecord(record);
-            if(!isExistsData){
-                QList<QStandardItem*> aItemList;
-                for(int i=0;i<cells.length();i++){
-                    QStandardItem* item = new QStandardItem(cells.at(i));
-                    item->setTextAlignment(Qt::AlignCenter);
-                    aItemList.append(item);
-                }
-                DB::Person* person = new DB::Person();
-                DB::Record* record = new DB::Record();
-                person->createPerson(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),aItemList.at(4)->text());
-                record->createRecord(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),
-                                     aItemList.at(6)->text(),aItemList.at(7)->text(),aItemList.at(8)->text(),aItemList.at(9)->text(),
-                                     aItemList.at(10)->text(),aItemList.at(11)->text(),aItemList.at(12)->text(),aItemList.at(13)->text(),
-                                     aItemList.at(14)->text(),aItemList.at(19)->text(),aItemList.at(1)->text().split("::").at(1));
-                QString person_str = aItemList.at(2)->text()+ "-" + aItemList.at(3)->text()+ "-" + aItemList.at(0)->text().split("::").at(1);
-                if(!tableView->isExistsPerson(person_str)){
-                    computedPage->createSinglePersonChart(person_str);
-                }
-                tableView->addRowData(aItemList);
-                QVector<double> values ={aItemList.at(12)->text().toDouble(),aItemList.at(13)->text().toDouble(),
-                                         aItemList.at(14)->text().toDouble(),0,0,0,0};
-                tableView->addTableData(person_str,aItemList.at(9)->text(),aItemList.at(10)->text(),aItemList.at(11)->text(),values);
-                tableView->setColumnHidden(tableSetting->getTableHeaderData().length(), true);
-                person->deleteLater();
-                record->deleteLater();
-            }
-
-
+            tableDatas.push_back(cells);
         }
     }
+    return tableDatas;
 }
 
 QVector<QVector<QString>> Player::openScoreXlsx()

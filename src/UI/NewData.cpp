@@ -1,9 +1,11 @@
 ﻿#include "NewData.h"
 #include "ui_newdata.h"
 #include <QDebug>
+#include <QDate>
 
 #include "src/Settings/TableSetting.h"
 #include "src/Common/Message.h"
+#include "src/UI/TableView.h"
 
 static NewData* INSTANCE=nullptr;
 
@@ -25,6 +27,7 @@ NewData::NewData(QWidget *parent) :
     this->_setTrainStage();
 
     connect(ui->stroke,SIGNAL(currentTextChanged(const QString)),this,SLOT(on_restStorkeType(const QString)));
+    connect(ui->name,SIGNAL(textChanged(QString)),this,SLOT(on_findRecord(QString)));
 }
 
 NewData::~NewData()
@@ -50,21 +53,21 @@ const QList<QStandardItem*> NewData::getRowData(int historyRowCount)
     bool isWomanChecked = ui->woman->isChecked();
     QString gender = getGender(isManChecked,isWomanChecked);
     QString weight = ui->weight->text();
-    QString birthdayDate = ui->birthday->text();
-    QString age = getAge(birthdayDate);
+    QString birthday = ui->birthday->text();
+    QString age = getAge(birthday);
     QString sportLevel = ui->sportLevel->currentText();
     QString team = ui->team->currentText();
-    QString trainPhasse = ui->trainPhasse->currentText();
+    QString stage = ui->trainPhasse->currentText();
     QString stroke = ui->stroke->currentText();
-    QString type = ui->type->currentText();
-    QString testDistance = ui->testDistance->currentText();
+    QString strokeItem = ui->type->currentText();
+    QString distance = ui->testDistance->currentText();
     QString maxPower1 = ui->maxPower1->text();
     QString maxPower2 = ui->maxPower2->text();
     QString maxPower3 = ui->maxPower3->text();
     QString testDate = getCurDate(QDate::currentDate());
     QString testEnv = ui->testEnv->currentText();
 
-    QStandardItem* identityID = new QStandardItem(ui->name->text()  + "::" + birthdayDate);
+    QStandardItem* identityID = new QStandardItem(ui->name->text()  + "::" + birthday);
     QStandardItem* testID = new QStandardItem(QString::number(historyRowCount)  + "::" + testDate);
     QStandardItem* name_item = new QStandardItem(ui->name->text());
     QStandardItem* gender_item = new QStandardItem(gender);
@@ -72,10 +75,10 @@ const QList<QStandardItem*> NewData::getRowData(int historyRowCount)
     QStandardItem* age_item = new QStandardItem(age);
     QStandardItem* sportLevel_item = new QStandardItem(sportLevel);
     QStandardItem* team_item = new QStandardItem(team);
-    QStandardItem* trainStage_item = new QStandardItem(trainPhasse);
+    QStandardItem* trainStage_item = new QStandardItem(stage);
     QStandardItem* stroke_item = new QStandardItem(stroke);
-    QStandardItem* strokeItem_item = new QStandardItem(type);
-    QStandardItem* testDistance_item = new QStandardItem(testDistance);
+    QStandardItem* strokeItem_item = new QStandardItem(strokeItem);
+    QStandardItem* testDistance_item = new QStandardItem(distance);
     QStandardItem* maxPowerOne_item = new QStandardItem(maxPower1);
     QStandardItem* maxPowerTwo_item = new QStandardItem(maxPower2);
     QStandardItem* maxPowerThree_item = new QStandardItem(maxPower3);
@@ -109,7 +112,9 @@ const QList<QStandardItem*> NewData::getRowData(int historyRowCount)
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     }
 
-    m_uniqueData = ui->name->text() + birthdayDate +  gender + stroke + type + testDistance;
+    QString person = ui->name->text() + "-" + gender + "-" + birthday;
+    QString record = person + "-" + stroke + "-" + strokeItem + "-" + distance;
+    m_uniqueData = record;
 
     return aItemList;
 }
@@ -151,6 +156,16 @@ void NewData::setWarnText(QString text)
 void NewData::clearWarnText()
 {
     ui->warnLabel->clear();
+}
+
+void NewData::clearText()
+{
+    ui->maxPower1->clear();
+    ui->maxPower2->clear();
+    ui->maxPower3->clear();
+    ui->maxPower1->setValue(0.00);
+    ui->maxPower2->setValue(0.00);
+    ui->maxPower3->setValue(0.00);
 }
 
 QString NewData::uniqueData()
@@ -235,5 +250,27 @@ void NewData::on_restStorkeType(const QString &text)
         ui->type->clear();
         QStringList strokeItem = tableSetting->getStrokeItem()[text];
         ui->type->addItems(strokeItem);
+    }
+}
+
+void NewData::on_findRecord(const QString& text)
+{
+    qDebug() <<text;
+    auto tableView = TableView::getInstance();
+    QList<QString> keys = tableView->tableDatas().keys();
+    for(int i=0; i<keys.size(); ++i){
+        QString name = keys.at(i).split("-").at(0);
+        QString gender = keys.at(i).split("-").at(1);
+        QString birthday = keys.at(i).split("-").at(2);
+        if(name==text){
+            if(gender=="男"){
+                ui->man->setChecked(true);
+            }
+            if(gender=="女"){
+                ui->woman->setChecked(true);
+            }
+            ui->birthday->setDate(QDate::fromString(birthday,"yyyy/M/d"));
+            ui->weight->setValue(tableView->tableDatas()[keys.at(i)]->weight().toDouble());
+        }
     }
 }

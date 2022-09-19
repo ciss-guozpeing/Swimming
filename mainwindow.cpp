@@ -16,8 +16,8 @@
 #include "src/UI/StatisticsPage.h"
 #include "src/UI/ViewPage.h"
 #include "src/UI/HistDataPage.h"
-#include "src/Algorithm/ComputedChart.h"
 #include "src/Common/ThreadPool.h"
+#include "src/Tasks/LoadTableData.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_actQuit,SIGNAL(triggered()),this,SLOT(actQuite_triggered()));
     connect(m_actAccount,SIGNAL(triggered()),this,SLOT(actAccount_triggered()));
     connect(ui->scoreComboBox,SIGNAL(currentIndexChanged(int)),tableView(),SLOT(setScoreMode(int)));
+    connect(this,SIGNAL(sendTableDatas(QVector<QStringList>)),new LoadTableDataRunable,SLOT(receviedTableDatas(QVector<QStringList>)));
+    connect(ui->nameSearchEditLint,SIGNAL(textChanged(QString)), this, SLOT(nameSearch(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -251,11 +253,12 @@ void MainWindow::on_mainAsSaveBtn_clicked()
 
 void MainWindow::on_mainOpenExcelBtn_clicked()
 {
-    ComputedChartRunable* computedChartRunable = new ComputedChartRunable;
-    computedChartRunable->setAutoDelete(true);
     ThreadPool* threadPool = ThreadPool::getInstance();
-    threadPool->submitTask(computedChartRunable);
-//    Player()->openXlsx();
+    QVector<QStringList> tableDatas = Player()->openXlsx();
+    emit sendTableDatas(tableDatas);
+
+    LoadTableDataRunable* loadTableDataRunable = new LoadTableDataRunable;
+    threadPool->submitTask(loadTableDataRunable);
 }
 
 
@@ -272,6 +275,7 @@ void MainWindow::on_appendData_clicked()
 
     auto newData = NewData::getInstance();
     auto computedPage = ComputedPage::getInstance();
+    newData->clearText();
     int ret = newData->exec();
     if (ret == QDialog::Accepted) {
         QList<QStandardItem*> aItemList = newData->getRowData(tableView()->historyRowCount());
@@ -283,24 +287,30 @@ void MainWindow::on_appendData_clicked()
             newData->setWarnText("表中已存在同项数据");
             this->on_appendData_clicked();
         } else {
-            DB::Person* person = new DB::Person();
-            DB::Record* record = new DB::Record();
-            person->createPerson(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),aItemList.at(4)->text());
-            record->createRecord(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),
+            // 同步到数据库
+            DB::Person* person_db = new DB::Person();
+            DB::Record* record_db = new DB::Record();
+            QString name = aItemList.at(2)->text();
+            QString gender = aItemList.at(3)->text();
+            QString birthday = aItemList.at(0)->text().split("::").at(1);
+            QString person = name + "-" +gender + "-" + birthday;
+            person_db->createPerson(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),aItemList.at(4)->text());
+            record_db->createRecord(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),
                                  aItemList.at(6)->text(),aItemList.at(7)->text(),aItemList.at(8)->text(),aItemList.at(9)->text(),
                                  aItemList.at(10)->text(),aItemList.at(11)->text(),aItemList.at(12)->text(),aItemList.at(13)->text(),
                                  aItemList.at(14)->text(),aItemList.at(19)->text(),aItemList.at(1)->text().split("::").at(1));
-            QString person_str = aItemList.at(2)->text()+ "-" + aItemList.at(3)->text()+ "-" + aItemList.at(0)->text().split("::").at(1);
-            if(!tableView()->isExistsPerson(person_str)){
-                computedPage->createSinglePersonChart(person_str);
+            // 创建chart
+            if(!tableView()->isExistsPerson(person)){
+                computedPage->createSinglePersonChart(person);
             }
+            // 添加数据到表格
             tableView()->addRowData(aItemList);
             QVector<double> values ={aItemList.at(12)->text().toDouble(),aItemList.at(13)->text().toDouble(),
                                      aItemList.at(14)->text().toDouble(),0,0,0,0};
-            tableView()->addTableData(person_str,aItemList.at(9)->text(),aItemList.at(10)->text(),aItemList.at(11)->text(),values);
+            tableView()->addTableData(person,aItemList.at(4)->text(),aItemList.at(9)->text(),aItemList.at(10)->text(),aItemList.at(11)->text(),values);
             tableView()->setColumnHidden(tableSetting()->getTableHeaderData().length(), true);
-            person->deleteLater();
-            record->deleteLater();
+            person_db->deleteLater();
+            record_db->deleteLater();
         }
         // 刷新主页面表格
         this->on_mainRefresh_clicked();
@@ -347,9 +357,16 @@ void MainWindow::on_mainAllDeleteBtn_clicked()
 
 void MainWindow::on_mainSearch_clicked()
 {
+
+
     auto tableView = TableView::getInstance();
     tableView->proxyModel()->setRefresh(""); // 不可删除
     tableView->setColumnHidden(tableSetting()->getTableHeaderData().length(), false);
+
+    if(m_nameSearch!=""){
+        tableView->proxyModel()->setSourceModel(tableView->model());
+        tableView->proxyModel()->setFilterRegExp(m_nameSearch);
+    }
 
     tableView->proxyModel()->setRxCol3(ui->mainGenderCB->currentText());
     tableView->proxyModel()->setSourceModel(tableView->model());
@@ -416,6 +433,11 @@ void MainWindow::setUserName(QString text, bool userType)
         m_profileBtn->resize(m_userPixmap.size());
     }
     m_username->setText(text);
+}
+
+void MainWindow::nameSearch(QString text)
+{
+    m_nameSearch = text;
 }
 
 void MainWindow::restStorkeType(const QString &text)

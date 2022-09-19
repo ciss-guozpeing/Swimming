@@ -67,3 +67,13 @@ void Person::updatePerson(QString name, QString gender, QString birthday, QStrin
     }
 }
 
+QMap<QString,QString> Person::isExistsPerson(QString name, QString gender, QString birthday,QString weight)
+{
+    QMap<QString,QString> result;
+    auto logger = Log::instance();
+    QString title = "是否存在记录人员";
+    this->open();
+    QSqlQuery exists_query;
+    QString exists_sql = QString("select name, gender, birthday, weight from in");
+}
+

@@ -36,6 +36,7 @@ public:
         ERROR
     };
     void sendLogMessage(LOGGERTYPE loggerType,QString title, QString text, bool isSyncNotify);
+    void sendNotify(LOGGERTYPE loggerType, QString title, QString text);
     Q_ENUM(LOGGERTYPE);
 signals:
 

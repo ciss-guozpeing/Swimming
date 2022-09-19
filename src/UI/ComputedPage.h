@@ -34,13 +34,15 @@ public:
     static ComputedPage *getInstance();
 
     void personStatistics();
-    void createSinglePersonChart(QString key);
+    void createSinglePersonChart(QString person);
 
     void updatePersonStatistics(QMap<QString,QVector<int>> personStatistics);
     void updateSinglePersonStatistics(QMap<QString,QMap<QString,QVector<QVector<double>>>> result);
 
     void deleteSinglePersonChart(QString key);
-
+    static int histRowCount;
+public slots:
+    void updatePersonChart(QString person);
 private:
     Ui::ComputedPage *ui;
 };

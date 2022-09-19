@@ -1,4 +1,4 @@
-#ifndef PERSON_H
+﻿#ifndef PERSON_H
 #define PERSON_H
 
 #include "BaseDB.h"
@@ -10,6 +10,7 @@ namespace DB{
     public:
         explicit Person();
         void createPerson(QString name, QString birthday, QString gender, QString weight);
+        void updatePerson(QString name, QString gender, QString birthday, QString weight);
     signals:
 
     };

@@ -13,8 +13,9 @@ ThreadPool* ThreadPool::getInstance()
     return INSTANCE;
 }
 
-void ThreadPool::submitTask(QRunnable* task)
+void ThreadPool::submitTask(QRunnable* task, bool autoDelete)
 {
+    task->setAutoDelete(autoDelete);
     QThreadPool::globalInstance()->start(task);
 }
 

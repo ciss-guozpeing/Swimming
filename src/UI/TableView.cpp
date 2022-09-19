@@ -161,7 +161,7 @@ QVector<int> TableView::searchRowIndexs()
     return rowIndex;
 }
 
-bool TableView::isExistsRecord(QString text)
+bool TableView::isExistsRecord(QString record)
 {
     QVector<QString> rowDataVecotr;
     for(int i=0; i<m_model->rowCount(); ++i){
@@ -171,10 +171,11 @@ bool TableView::isExistsRecord(QString text)
         QString stroke = m_model->item(i,9)->text();
         QString strokeItem = m_model->item(i,10)->text();
         QString distance = m_model->item(i,11)->text();
-        QString record = name + birthday + gender + stroke + strokeItem + distance;
+        QString person = name + "-" + gender + "-" + birthday;
+        QString record = person + "-" + stroke + "-" + strokeItem + "-" + distance;
         rowDataVecotr.push_back(record);
     }
-    if(rowDataVecotr.contains(text)){
+    if(rowDataVecotr.contains(record)){
         return true;
     } else {
         return false;
@@ -738,12 +739,12 @@ QMap<QString,TableData*> TableView::tableDatas()
     return m_allTableData;
 }
 
-void TableView::addTableData(QString person,QString stroke,QString strokeItem,QString distance,QVector<double> values)
+void TableView::addTableData(QString person,QString weight, QString stroke,QString strokeItem,QString distance,QVector<double> values)
 {
     if(m_allTableData.contains(person)){
         m_allTableData[person]->setValues(stroke,strokeItem,distance,values);
     } else {
-        TableData* tableData = new TableData(person,stroke,strokeItem, distance, values);
+        TableData* tableData = new TableData(person, weight, stroke,strokeItem, distance, values);
         m_allTableData.insert(person,tableData);
     }
 }

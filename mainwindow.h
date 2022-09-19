@@ -44,6 +44,7 @@ private:
     QAction* m_actAccount;
     QAction* m_actQuit;
     TableModelManager* m_tableModelManager;
+    QString m_nameSearch;
     void setToolBarStatus();
     void initUI();
     TableSetting* tableSetting();
@@ -51,6 +52,8 @@ private:
     Player* Player();
     Settings* Settings();
     VisualizationPage* VisualizationPage();
+signals:
+    void sendTableDatas(QVector<QStringList> tableDatas);
 
 private slots:
     void on_actAbout_triggered();
@@ -93,13 +96,15 @@ private slots:
 
     void actAccount_triggered();
 
+    void on_scorePushButton_clicked();
+
     void restStorkeType(const QString& text);
 
     void setKValue();
 
     void setUserName(QString text, bool userType);
 
-    void on_scorePushButton_clicked();
+    void nameSearch(QString text);
 
 protected:
     void closeEvent(QCloseEvent* event);

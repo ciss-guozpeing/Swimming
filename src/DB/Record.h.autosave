@@ -12,6 +12,7 @@ namespace DB{
         QModelIndex m_modelIndex;
         QString m_oldUpdateValue;
         bool _isExistsRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
+        QMap<QString,QString> isExistsCreateRecord(QString name, QString bitr);
         QMap<QString,int> _isExistsUpdateRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
         QMap<QString,int> _isExistsDeleteRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
     public:

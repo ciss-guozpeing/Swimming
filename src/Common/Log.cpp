@@ -92,3 +92,24 @@ void Log::sendLogMessage(LOGGERTYPE loggerType,QString title, QString text, bool
         break;
     }
 }
+
+void Log::sendNotify(LOGGERTYPE loggerType, QString title, QString text)
+{
+    auto zpNotificationManager = ZpNotificationManager::getInstance();
+
+    switch (loggerType){
+    case LOGGERTYPE::DEBUG:
+        break;
+    case LOGGERTYPE::INFO:
+        zpNotificationManager->notify(title,text,":/images/images/success.png","");
+        break;
+    case LOGGERTYPE::WARN:
+        zpNotificationManager->notify(title,text,":/images/images/warn.png","");
+        break;
+    case LOGGERTYPE::ERROR:
+        zpNotificationManager->notify(title,text,":/images/images/failed.png","");
+        break;
+    default:
+        break;
+    }
+}
