@@ -2,6 +2,7 @@
 #define RECORD_H
 
 #include "BaseDB.h"
+#include "src/Common/ReturnData.h"
 
 #include <QModelIndex>
 
@@ -12,6 +13,8 @@ namespace DB{
         QModelIndex m_modelIndex;
         QString m_oldUpdateValue;
         bool _isExistsRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
+        ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QString createAt, QString personId);
+        QMap<QString,QString> isExistsCreateRecord(QString name, QString bitr);
         QMap<QString,int> _isExistsUpdateRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
         QMap<QString,int> _isExistsDeleteRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
     public:

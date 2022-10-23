@@ -72,14 +72,3 @@ void LoadTableDataRunable::receviedTableDatas(QVector<QStringList> tableDatas)
     m_tableDatas = tableDatas;
 }
 
-////                DB::Person* person = new DB::Person();
-////                DB::Record* record = new DB::Record();
-////                person->createPerson(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),aItemList.at(4)->text());
-////                record->createRecord(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),
-////                                     aItemList.at(6)->text(),aItemList.at(7)->text(),aItemList.at(8)->text(),aItemList.at(9)->text(),
-////                                     aItemList.at(10)->text(),aItemList.at(11)->text(),aItemList.at(12)->text(),aItemList.at(13)->text(),
-////                                     aItemList.at(14)->text(),aItemList.at(19)->text(),aItemList.at(1)->text().split("::").at(1));
-////                QString person_str = aItemList.at(2)->text()+ "-" + aItemList.at(3)->text()+ "-" + aItemList.at(0)->text().split("::").at(1);
-////                if(!tableView->isExistsPerson(person_str)){
-////                    computedPage->createSinglePersonChart(person_str);
-////                }

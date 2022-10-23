@@ -1,5 +1,6 @@
 ﻿#include "Record.h"
 #include "src/Common/Log.h"
+#include "src/DB/Person.h"
 #include "src/UI/TableView.h"
 #include "src/Settings/TableSetting.h"
 using namespace DB;
@@ -125,6 +126,36 @@ QMap<QString,int> Record::_isExistsDeleteRecord(QString name, QString birthday, 
     }
 }
 
+ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QString createAt, QString personId)
+{
+    auto logger = Log::instance();
+    ReturnData returnData;
+    QMap<QString,QString> data;
+    QString title = "是否存在记录";
+    QSqlQuery exists_query;
+    QString exists_sql = QString("select id from person where storke='%1' and type='%2' and distance='%3'"
+                                 "and create_at='%4' and person_id='%5'").arg(stroke,strokeItem,distance,createAt,personId);
+    exists_query.prepare(exists_sql);
+    if(!exists_query.exec()){
+        QString text = "查询记录数据库执行错误";
+        LOG_ERROR(title + "-" + text);
+        logger->sendNotify(logger->LOGGERTYPE::ERROR, title, text);
+        returnData.code = "400";
+        returnData.data = data;
+        return returnData;
+    } else {
+        if(exists_query.last()){
+            data["id"] = exists_query.value("id").toString();
+            qDebug() << exists_query.value("id").toString();
+            returnData.code = "200";
+            returnData.data = data;
+            return returnData;
+        } else {
+            returnData.code = "400";
+            return returnData;
+         }
+    }
+}
 void Record::createRecord(QString name, QString birthday, QString gender,QString level, QString team,
                           QString stage,QString stroke,QString type,QString distance, QString maxpower1, QString maxpower2,
                           QString maxpower3,QString environment,QString create_at)
@@ -631,13 +662,38 @@ bool Record::updateEnv(QString env)
 
 void Record::updateRecord(QStringList record)
 {
-    qDebug() <<record;
     QString create_at = record.at(1).split("::").at(1);
     QString name = record.at(2);
     QString gender = record.at(3);
     QString weight = record.at(4);
     QString birthday = record.at(0).split("::").at(1);
+    QString level = record.at(6);
+    QString team = record.at(7);
+    QString stage = record.at(8);
+    QString stroke = record.at(9);
+    QString strokeItem = record.at(10);
+    QString distance = record.at(11);
+    QString maxPower1 = record.at(12);
+    QString maxPower2 = record.at(13);
+    QString maxPower3 = record.at(14);
+    QString maxPower = record.at(15);
+    QString relPower = record.at(16);
+    QString percentage = record.at(17);
+    QString contributionRate = record.at(18);
+    auto person = new DB::Person;
+    ReturnData  personReturnData;
+    personReturnData = person->isExistsPerson(name,gender,birthday,weight);
+    if(personReturnData.code=="200"){
+      if(personReturnData.data["weight"] != weight) {
+          person->updateWeight(personReturnData.data["id"],personReturnData.data["weight"]);
+      }
+    }
 
-
+    if(personReturnData.code=="400"){
+        person->createPerson(name,birthday,gender,weight);
+        personReturnData = person->isExistsPerson(name,gender,birthday,weight);
+    }
+    qDebug() << "id...." <<  personReturnData.data["id"];
+//    ReturnData recordReturnData = this->isExistsRecord(stroke,strokeItem,distance,create_at,personReturnData.data["id"]);
 }
 

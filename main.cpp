@@ -12,7 +12,7 @@
 #include "src/DB/DBPool.h"
 #include "src/UI/Login.h"
 #include "src/Settings/WindowSetting.h"
-
+#include "src/Common/ReturnData.h"
 
 int main(int argc, char *argv[])
 {   
@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
     qApp->setApplicationDisplayName(APP_NAME);
     MainWindow w;
     Login* login = Login::getInstance();
-
+    //
+    qRegisterMetaType<ReturnData>("ReturnData");
     // 初始化数据库
      auto dbPool = ConnectionPool::openConnection();
 

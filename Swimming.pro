@@ -97,6 +97,7 @@ HEADERS += \
     src/Common/Log.h \
     src/Common/Message.h \
     src/Common/ModuleManager.h \
+    src/Common/ReturnData.h \
     src/Common/ThreadPool.h \
     src/Common/window.h \
     src/DB/BaseDB.h \
