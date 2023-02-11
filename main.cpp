@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     // 配置日志
     QThread::currentThread()->setObjectName("主线程");
     Log::instance()->init(QCoreApplication::applicationDirPath() + "/" +"config/log.conf");
-    LOG_INFO(QString(" '%1' 程序开启").arg(qApp->applicationName()));
+    LOG_INFO(QString("%1 程序启动").arg(qApp->applicationName()));
 
 
     // 初始化模块管理类

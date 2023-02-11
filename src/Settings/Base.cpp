@@ -20,7 +20,7 @@ void Base::_userSettings()
 
 void Base::readSettings()
 {
-     QString fileName = QCoreApplication::applicationDirPath() + "/config/Basic.ini";
+     QString fileName = QCoreApplication::applicationDirPath() + "/bin/config/Basic.ini";
      m_userSettings = new QSettings(fileName,QSettings::IniFormat);
      m_userSettings->setIniCodec(QTextCodec::codecForName("UTF-8"));
      m_userSettings->beginGroup("Table");

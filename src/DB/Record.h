@@ -13,15 +13,17 @@ namespace DB{
         QModelIndex m_modelIndex;
         QString m_oldUpdateValue;
         bool _isExistsRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
-        ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QString createAt, QString personId);
+        ReturnData isExistsRecord(QString stroke, QString strokeItem, QString distance, QString createAt, QString personId);
+
         QMap<QString,QString> isExistsCreateRecord(QString name, QString bitr);
         QMap<QString,int> _isExistsUpdateRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
         QMap<QString,int> _isExistsDeleteRecord(QString name, QString birthday, QString gender,QString stroke,QString type,QString create_at);
+
     public:
         Record();
-        void createRecord(QString name, QString birthday, QString gender,QString level, QString team,
-                          QString stage,QString stroke,QString type,QString distance, QString maxpower1, QString maxpower2,
-                          QString maxpower3,QString environment,QString create_at);
+        void createRecord(QString personId, QString level, QString team, QString stage,QString stroke,
+                          QString strokeItem,QString distance, QString maxpower1, QString maxpower2,
+                          QString maxpower3,QString environment, QString createAt);
 
         void updateRecord(QString name, QString birthday, QString gender,QString stroke,QString type,
                           QString maxPower,QString relPower,QString percentage,QString contribution_rate);

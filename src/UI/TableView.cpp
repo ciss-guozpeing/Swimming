@@ -506,14 +506,18 @@ void TableView::computedModel()
         l_rowMaxPowerValue.append(recordAndMax);
         m_rowMaxPowerValue.insert(record,m_model->item(i,i_maxPowerIndex)->text());
     }
+    qDebug() << "adf" << l_rowMaxPowerValue;
     for (int i=0; i<l_rowMaxPowerValue.length(); i++){
         QStringList strSplit = l_rowMaxPowerValue.at(i)[0].split("-");
+        qDebug() << "strSplit"<< strSplit;
         QString strokeItem = maxPowerKeyMap[strSplit[1] + "-" + strSplit[2]];
         QStringList strokeItems  = contributionMap[strSplit[1]].split("-");
 
-        double legValue = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit[1] + "-" + strokeItems.value(0) + "-" + strSplit.at(3) ].toDouble();
-        double handleValue = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit[1] + "-" + strokeItems.value(1) + "-" +strSplit.at(3)].toDouble();
-        QString maxPower = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit.at(1) + "-" + strokeItem + "-" + strSplit.at(3)];
+        double legValue = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit[1] + "-" + strSplit[2]+ "-"+strSplit.at(3)].toDouble();
+        double handleValue = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit[1] + "-" + strSplit[2]+ "-"+strSplit.at(3)].toDouble();
+        qDebug() << "腿" << "手" << legValue << handleValue;
+        QString maxPower = m_rowMaxPowerValue[strSplit.at(0) + "-" +strSplit.at(1) + "-" + strSplit.at(2) + "-"+strSplit.at(3)];
+
         QString percentage,contributeRate;
         // 百分比
         if (maxPower == "") {
@@ -529,8 +533,8 @@ void TableView::computedModel()
             contributeRate = statistics->getContribute(l_rowMaxPowerValue.at(i)[1], legValue + handleValue);
             contributeRate = QString::number(contributeRate.toDouble() * 100, 'f', 3) + '%';
         }
-        qDebug() << maxPower;
-        qDebug() << l_rowMaxPowerValue;
+        qDebug() <<"百分比"<< percentage;
+        qDebug() <<"贡献率"<< contributeRate;
         // 设置
         this->setTableModel(i,i_penPowerIndex,percentage);
         this->setTableModel(i,i_contributeIndex,contributeRate);

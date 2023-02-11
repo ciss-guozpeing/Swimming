@@ -97,21 +97,21 @@ void Base::initTable()
                                                            team varchar(30) not null , \
                                                            stage varchar(10) not null, \
                                                            stroke varchar(10) not null, \
-                                                           type varchar(10) not null, \
+                                                           strokeItem varchar(10) not null, \
                                                            distance integer not null, \
-                                                           maxpower1 varchar(10) not null, \
-                                                           maxpower2 varchar(10) not null, \
-                                                           maxpower3 varchar(10) not null, \
-                                                           maxpower varchar(10), \
-                                                           relpower varchar(10), \
+                                                           maxPower1 varchar(10) not null, \
+                                                           maxPower2 varchar(10) not null, \
+                                                           maxPower3 varchar(10) not null, \
+                                                           maxPower varchar(10), \
+                                                           relPower varchar(10), \
                                                            percentage varchar(10), \
-                                                           contribution_rate varchar(10), \
+                                                           contributionRate varchar(10), \
                                                            environment varchar(10), \
                                                            workspace varchar(10), \
-                                                           create_at TIMESTAMP default (strftime('%Y/%m/%d','now','localtime')), \
-                                                           update_at numeric default (datetime('now','localtime')), \
-                                                           person_id interger, \
-                                                           constraint fk_person_id foreign key(person_id) references person(id) \
+                                                           createAt TIMESTAMP default (strftime('%Y/%m/%d','now','localtime')), \
+                                                           updateAt numeric default (datetime('now','localtime')), \
+                                                           personId interger, \
+                                                           constraint fk_person_id foreign key(personId) references person(id) \
                                                                                   )";
    record_query.prepare(record_sql);
    if (!record_query.exec()){

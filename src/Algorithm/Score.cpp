@@ -157,10 +157,12 @@ QString Score::commonModeScore(QString gender, QString stroke, QString strokeIte
         float minValue = scoreVector.at(i).split("-").at(0).toFloat();
         float maxValue = scoreVector.at(i).split("-").at(1).toFloat();
         if(maxPower_f > scoreVector.at(scoreVector.size()-1).split("-").at(1).toFloat()){
-            scoreResult = score.at(scoreVector.size());
+            qDebug() << "score1" << scoreVector.size();
+            scoreResult = score.at(scoreVector.size() + 1);
             return QString::number(scoreResult);
         }
         if(maxPower_f < scoreVector.at(0).split("-").at(0).toFloat()){
+
             return QString::number(scoreResult);
         }
         if((minValue<maxPower_f && maxPower_f < maxValue) || fabs(maxPower_f-minValue) <= EPSINON){

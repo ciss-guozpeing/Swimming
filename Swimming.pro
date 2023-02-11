@@ -8,9 +8,29 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
-CONFIG(release, debug|release){#仅在release模式下，才以管理员权限运行
+win32:CONFIG(release, debug|release){#仅在release模式下，才以管理员权限运行
     RC_FILE=manifest.rc
 }
+
+#macx:CONFIG(debug, debug|release){
+#    DESTDIR = $$IDE_BUILD_TREE/_debug64
+#} else:macx:CONFIG(release, debug|release){
+#    DESTDIR = $$IDE_BUILD_TREE/_release64
+#}
+
+#临时文件存放位置
+MOC_DIR         = temp/moc  #指定moc命令将含Q_OBJECT的头文件转换成标准.h文件的存放目录
+RCC_DIR         = temp/rcc  #指定rcc命令将.qrc文件转换成qrc_*.h文件的存放目录
+UI_DIR          = temp/ui   #指定rcc命令将.qrc文件转换成qrc_*.h文件的存放目录
+OBJECTS_DIR     = temp/obj  #指定目标文件(obj)的存放目录
+
+#指定生成的应用程序放置的目录
+DESTDIR         = bin
+
+
+copy_files.files = $$PWD/Config/Basic.ini
+copy_files.path = $$OUT_PWD/bin/config/
+COPIES += copy_files
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -22,6 +42,7 @@ DEFINES += QT_MESSAGELOGCONTEXT
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
 
 #-----------------------------------------------------------------------------------------
 # Libraries
@@ -165,8 +186,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
-
-#include(./QXlsx/QXlsx.pri)
 
 DISTFILES += \
     libs/customplot/qucstomplot.pri \

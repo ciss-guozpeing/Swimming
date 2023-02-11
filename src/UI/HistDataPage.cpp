@@ -80,8 +80,8 @@ void HistDataPage::setQueryModel()
 {
     auto db = new DB::Base();
     db->open();
-    m_queryModel->setQuery("SELECT person_id,create_at,name,birthday,gender,weight,level,team,stage,stroke,type,distance,maxpower1,"
-                           "maxpower2, maxpower3,maxpower,relpower,percentage,contribution_rate,environment from record LEFT JOIN person on record.person_id == person.id");
+    m_queryModel->setQuery("SELECT personId,createAt,name,birthday,gender,weight,level,team,stage,stroke,strokeItem,distance,maxPower1,"
+                           "maxPower2, maxPower3,maxPower,relPower,percentage,contributionRate,environment from record LEFT JOIN person on record.personId == person.id");
 
 
     QStringList header;

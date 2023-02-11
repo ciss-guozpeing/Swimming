@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setAttribute(Qt::WA_QuitOnClose);
     this->setWindowIcon(QIcon(":/images/images/swimming.png"));
 
+
     connect(Login::getInstance(),SIGNAL(loginOnclicked(QString,bool)), this, SLOT(setUserName(QString,bool)));
     connect(Login::getInstance(),SIGNAL(showMainWindow()), this, SLOT(show()));
     connect(ui->mainSearch,SIGNAL(clicked()), this, SLOT(setKValue()));
@@ -293,12 +294,21 @@ void MainWindow::on_appendData_clicked()
             QString name = aItemList.at(2)->text();
             QString gender = aItemList.at(3)->text();
             QString birthday = aItemList.at(0)->text().split("::").at(1);
-            QString person = name + "-" +gender + "-" + birthday;
-            person_db->createPerson(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),aItemList.at(4)->text());
-            record_db->createRecord(aItemList.at(2)->text(),aItemList.at(0)->text().split("::").at(1),aItemList.at(3)->text(),
-                                 aItemList.at(6)->text(),aItemList.at(7)->text(),aItemList.at(8)->text(),aItemList.at(9)->text(),
-                                 aItemList.at(10)->text(),aItemList.at(11)->text(),aItemList.at(12)->text(),aItemList.at(13)->text(),
-                                 aItemList.at(14)->text(),aItemList.at(19)->text(),aItemList.at(1)->text().split("::").at(1));
+            QString weight = aItemList.at(4)->text();
+            QString person = name + "-" + gender + "-" + birthday;
+            QString level = aItemList.at(6)->text();
+            QString team = aItemList.at(7)->text();
+            QString stage = aItemList.at(8)->text();
+            QString stroke = aItemList.at(9)->text();
+            QString strokeItem = aItemList.at(10)->text();
+            QString distance = aItemList.at(11)->text();
+            QString maxpower1 = aItemList.at(12)->text();
+            QString maxpower2 = aItemList.at(13)->text();
+            QString maxpower3 = aItemList.at(14)->text();
+            QString environment = aItemList.at(19)->text();
+            QString createAt = aItemList.at(1)->text().split("::").at(1);
+            ReturnData personData= person_db->createPerson(name,birthday,gender, weight);
+            record_db->createRecord(personData.data["id"],level,team,stage,stroke,strokeItem,distance,maxpower1,maxpower2,maxpower3,environment,createAt);
             // 创建chart
             if(!tableView()->isExistsPerson(person)){
                 computedPage->createSinglePersonChart(person);
@@ -475,8 +485,6 @@ void MainWindow::setKValue()
     }
 }
 
-
-
 TableSetting* MainWindow::tableSetting()
 {
     return TableSetting::getInstance();
@@ -506,6 +514,8 @@ void MainWindow::on_scorePushButton_clicked()
 {
     auto score = Score::getInstance();
     QVector<QVector<QString>> scoreDatas = Player()->openScoreXlsx();
-    score->setScoreCommonStandard(scoreDatas);
+    if(!scoreDatas.isEmpty()){
+        score->setScoreCommonStandard(scoreDatas);
+    }
 }
 

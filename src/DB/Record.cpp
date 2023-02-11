@@ -126,19 +126,19 @@ QMap<QString,int> Record::_isExistsDeleteRecord(QString name, QString birthday, 
     }
 }
 
-ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QString createAt, QString personId)
+ReturnData Record::isExistsRecord(QString stroke,QString strokeItem,QString distance, QString createAt, QString personId)
 {
     auto logger = Log::instance();
     ReturnData returnData;
     QMap<QString,QString> data;
     QString title = "是否存在记录";
     QSqlQuery exists_query;
-    QString exists_sql = QString("select id from person where storke='%1' and type='%2' and distance='%3'"
-                                 "and create_at='%4' and person_id='%5'").arg(stroke,strokeItem,distance,createAt,personId);
+    QString exists_sql = QString("select id from record where stroke='%1' and strokeItem='%2' and distance='%3'"
+                                 "and createAt='%4' and personId='%5'").arg(stroke,strokeItem,distance,createAt,personId);
     exists_query.prepare(exists_sql);
     if(!exists_query.exec()){
         QString text = "查询记录数据库执行错误";
-        LOG_ERROR(title + "-" + text);
+        LOG_ERROR(QString("%1-%2").arg(title).arg(text));
         logger->sendNotify(logger->LOGGERTYPE::ERROR, title, text);
         returnData.code = "400";
         returnData.data = data;
@@ -146,7 +146,16 @@ ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QS
     } else {
         if(exists_query.last()){
             data["id"] = exists_query.value("id").toString();
-            qDebug() << exists_query.value("id").toString();
+            data["level"] = exists_query.value("level").toString();
+            data["team"] = exists_query.value("team").toString();
+            data["stage"] = exists_query.value("stage").toString();
+            data["stroke"] = exists_query.value("stroke").toString();
+            data["strokeItem"] = exists_query.value("strokeItem").toString();
+            data["distance"] = exists_query.value("distance").toString();
+            data["maxPower1"] = exists_query.value("maxPower1").toString();
+            data["maxPower2"] = exists_query.value("maxPower2").toString();
+            data["maxPower3"] = exists_query.value("maxPower3").toString();
+            data["environment"] = exists_query.value("environment").toString();
             returnData.code = "200";
             returnData.data = data;
             return returnData;
@@ -156,38 +165,31 @@ ReturnData isExistsRecord(QString stroke,QString strokeItem,QString distance, QS
          }
     }
 }
-void Record::createRecord(QString name, QString birthday, QString gender,QString level, QString team,
-                          QString stage,QString stroke,QString type,QString distance, QString maxpower1, QString maxpower2,
-                          QString maxpower3,QString environment,QString create_at)
+
+void Record::createRecord(QString personId,QString level, QString team, QString stage,QString stroke,QString strokeItem,
+                          QString distance, QString maxpower1, QString maxpower2,
+                          QString maxpower3,QString environment, QString createAt)
 {
     auto logger = Log::instance();
-    this->open();
-    bool isExists = this->_isExistsRecord(name,birthday,gender,stroke,type,create_at);
-    if(!isExists){
-        QString person_id;
-        QSqlQuery select_person_query;
-        QString select_person_sql = QString("select id from person where name = '%1' and gender='%2' and birthday='%3'").arg(name,gender,birthday);
-        select_person_query.prepare(select_person_sql);
-        if(!select_person_query.exec()){
-        logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"创建记录","创建记录失败",true);
-        } else{
-            select_person_query.next();
-            person_id = select_person_query.value(0).toString();
-        }
 
-        // 插入
+    ReturnData isExistsRecord = this->isExistsRecord(stroke,strokeItem,distance,createAt,personId);
+    if(isExistsRecord.code=="400"){
+        this->open();
         QSqlQuery create_query;
-        QString create_sql = QString("INSERT into record (level,team,stage,stroke,type,distance,maxpower1,maxpower2,maxpower3,"
-                                     "environment,person_id) VALUES('%1','%2','%3','%4','%5','%6','%7','%8','%9','%10','%11')").arg(level,team,stage,stroke,type,
-                                                                                                                                     distance,maxpower1,maxpower2,                                                                                                                          maxpower3,environment,person_id);
+        QString create_sql = QString("INSERT into record (level,team,stage,stroke,strokeItem,distance,maxPower1,maxPower2,maxPower3,"
+                                     "environment, createAt, personId) VALUES('%1','%2','%3','%4','%5','%6','%7','%8','%9','%10','%11','%12')").arg(level,team,stage,stroke,strokeItem,
+                                                                                                                                     distance,maxpower1,maxpower2,maxpower3,environment,createAt,personId);
         create_query.prepare(create_sql);
         if(!create_query.exec()){
-            logger->sendLogMessage(logger->LOGGERTYPE::ERROR,"创建记录","创建记录失败",true);
+            LOG_ERROR("创建记录失败");
         } else {
-            logger->sendLogMessage(logger->LOGGERTYPE::INFO,"创建记录","创建记录成功",true);
+            LOG_INFO("创建记录成功");
         }
+        this->close();
+    } else {
+        LOG_INFO("创建记录成功");
     }
-    this->close();
+
 }
 
 void Record::updateRecord(QString name, QString birthday, QString gender,QString stroke,QString type,
@@ -680,20 +682,54 @@ void Record::updateRecord(QStringList record)
     QString relPower = record.at(16);
     QString percentage = record.at(17);
     QString contributionRate = record.at(18);
-    auto person = new DB::Person;
+    QString environment = record.at(19);
+    auto personObj = new DB::Person;
     ReturnData  personReturnData;
-    personReturnData = person->isExistsPerson(name,gender,birthday,weight);
+    personReturnData = personObj->isExistsPerson(name,gender,birthday,weight);
+
     if(personReturnData.code=="200"){
       if(personReturnData.data["weight"] != weight) {
-          person->updateWeight(personReturnData.data["id"],personReturnData.data["weight"]);
+          personObj->updateWeight(personReturnData.data["id"],personReturnData.data["weight"]);
       }
     }
 
     if(personReturnData.code=="400"){
-        person->createPerson(name,birthday,gender,weight);
-        personReturnData = person->isExistsPerson(name,gender,birthday,weight);
+        personObj->createPerson(name,birthday,gender,weight);
+        personReturnData = personObj->isExistsPerson(name,gender,birthday,weight);
     }
-    qDebug() << "id...." <<  personReturnData.data["id"];
-//    ReturnData recordReturnData = this->isExistsRecord(stroke,strokeItem,distance,create_at,personReturnData.data["id"]);
+
+    ReturnData recordReturnData = this->isExistsRecord(stroke, strokeItem, distance, create_at, personReturnData.data["id"]);
+    if(recordReturnData.code=="200"){
+        QString id = recordReturnData.data["id"];
+        QString old_level = recordReturnData.data["level"];
+        QString old_team = recordReturnData.data["team"];
+        QString old_stage = recordReturnData.data["stage"];
+        QString old_maxPower1 = recordReturnData.data["maxPower1"];
+        QString old_maxPower2 = recordReturnData.data["maxPower2"];
+        QString old_maxPower3 = recordReturnData.data["maxPower3"];
+        QString old_environment = recordReturnData.data["environment"];
+        if(level!=old_level){
+
+        }
+        if(team!=old_team){
+
+        }
+        if(stage!=old_stage){
+
+        }
+        if(maxPower1!=old_maxPower1){
+
+        }
+        if(maxPower2!=old_maxPower2){
+
+        }
+        if(maxPower3!=old_maxPower3){
+
+        }
+    }
+
+    if(recordReturnData.code=="400"){
+        this->createRecord(personReturnData.data["id"], level, team, stage,stroke,strokeItem,distance,maxPower1,maxPower2,maxPower3,environment,create_at);
+    }
 }
 

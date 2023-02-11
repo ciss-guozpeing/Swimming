@@ -7,14 +7,16 @@ static TableSetting* INSTANCE=nullptr;
 
 TableSetting::TableSetting()
 {
-    QFileInfo fi(QApplication::applicationDirPath() + "/config/");
-    bool isExists = fi.exists();
-    if(!isExists){
-        QDir dir;
-        dir.mkdir(QApplication::applicationDirPath() + "/config/");
-        QFile::copy("D:/Documents/WorkSpace/Swimming/config/Basic.ini",QApplication::applicationDirPath() + "/config/Basic.ini");
-    }
-    QString fileName = QCoreApplication::applicationDirPath() + "/config/Basic.ini";
+    QString fileName;
+    #ifdef Q_OS_WIN
+        qDebug() << "win";
+    #endif
+    #ifdef Q_OS_MAC
+        fileName = fileName = QCoreApplication::applicationDirPath() + "/../../../config/Basic.ini";
+    #endif
+    #ifdef Q_OS_LINUX
+        qDebug()<<"linux";
+    #endif
     m_tableSetting = new QSettings(fileName,QSettings::IniFormat);
     m_tableSetting->setIniCodec(QTextCodec::codecForName("UTF-8"));
 }
